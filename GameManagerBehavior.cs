@@ -12,12 +12,6 @@ public class GameManagerBehavior : MonoBehaviour {
 
 	private int wave;
 
-	public IEnumerator returnWarning(){
-		nextWaveWarning.enabled = true;
-		yield return new WaitForSeconds(2);
-		nextWaveWarning.enabled = false;
-	}
-
 	public int Wave {
 		get { 
 			return wave; 
