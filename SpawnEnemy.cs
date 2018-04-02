@@ -13,46 +13,49 @@ public class SpawnEnemy : MonoBehaviour {
 
 	public GameObject[] wayPoints;
 	public GameObject testEnemyPrefab;
-	public Wave [] waves;
-	public int timeBetweenWaves = 5;
+
+	// to create different waves of enemies
+	public Wave[] waves;
+	public int timeBetweenWaves;
 
 	private GameManagerBehavior gameManager;
 
 	private float lastSpawnTime;
 	private int enemiesSpawned = 0;
+
+
 	// Use this for initialization
 	void Start () {
-//		Instantiate(testEnemyPrefab).GetComponent<MoveEnemy>().wayPoints = wayPoints;
 		lastSpawnTime = Time.time;
 		gameManager = GameObject.Find ("GameManager").GetComponent<GameManagerBehavior> ();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		int currentWave = gameManager.Wave;
-		if (currentWave < waves.Length)
-		{
+		if (currentWave < waves.Length){
+
 			float timeInterval = Time.time - lastSpawnTime;
+			gameManager.TimeInterval = timeInterval;
+
+			// spawnInterval is the time interval between each enemy in a particular wave of enemies
 			float spawnInterval = waves[currentWave].spawnInterval;
-			if(((enemiesSpawned == 0 && timeInterval > timeBetweenWaves)||timeInterval > spawnInterval)&&enemiesSpawned < waves[currentWave].maxEnemies)
-			{
+
+			if((enemiesSpawned == 0 && timeInterval > timeBetweenWaves) || (timeInterval > spawnInterval && enemiesSpawned < waves[currentWave].maxEnemies && enemiesSpawned != 0)){
 				lastSpawnTime = Time.time;
-				GameObject newEnemy = (GameObject)Instantiate(waves[currentWave].enemyPrefab);
-				//recover the next line (inexist on the webpage)
-				newEnemy.GetComponent<MoveEnemy>().wayPoints = wayPoints;
+				GameObject newEnemy = (GameObject)Instantiate (waves [currentWave].enemyPrefab);
+				newEnemy.GetComponent<MoveEnemy> ().wayPoints = wayPoints;
 				enemiesSpawned++;
 			}
-			if (enemiesSpawned == waves[currentWave].maxEnemies &&
-				GameObject.FindGameObjectWithTag("Enemy") == null) 
-			{
+
+			if (enemiesSpawned == waves[currentWave].maxEnemies && GameObject.Find("enemy(Clone)") == null) {
 				gameManager.Wave++;
-//				gameManager.Gold = Mathf.RoundToInt(gameManager.Gold * 1.1f);
+				//gameManager.Gold = Mathf.RoundToInt(gameManager.Gold * 1.1f);
 				enemiesSpawned = 0;
 				lastSpawnTime = Time.time;
 			}
 		}
-		else
-		{
+		else{
 			gameManager.gameOver = true;
 			GameObject gameOverText = GameObject.FindGameObjectWithTag("GameWon");
 			gameOverText.GetComponent<Animator>().SetBool("gameOver", true);
